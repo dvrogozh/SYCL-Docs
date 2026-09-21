@@ -5,7 +5,8 @@ extensions and the `intel/llvm` vendor extension backlog) and
 [`vulkan_table.md`](vulkan_table.md) (the Vulkan registry), with the focus on how
 the two compare and what the data suggests could be improved in the SYCL flow.
 All figures are as of 2026-09-21; derivations and caveats stay in the two source
-documents.
+documents. [`summary2.md`](summary2.md) takes the absorption question on its own —
+when the `intel/llvm` backlog clears and which levers shorten that.
 
 ## The numbers side by side
 

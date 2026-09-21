@@ -5,7 +5,8 @@ Generated from the `git` history of `/home/dvrogozh/git/Vulkan-Docs` (`main` at
 2026-09-21. This is the Vulkan counterpart of the SYCL analysis in
 [`table.md`](table.md); see [Methodology](#methodology) for what "created"
 means here and why it differs from the SYCL numbers. [`summary.md`](summary.md)
-condenses both documents into key facts and suggestions for the SYCL flow.
+condenses both documents into key facts and suggestions for the SYCL flow, and
+[`summary2.md`](summary2.md) covers the SYCL absorption timeline.
 
 ## Summary
 

@@ -15,7 +15,8 @@ and [Composition](#composition-khronos-versus-vendor-extensions) compares the
 resulting Khronos/vendor mix with Vulkan's. The Vulkan counterpart of this
 analysis is in [`vulkan_table.md`](vulkan_table.md), and
 [`summary.md`](summary.md) condenses both into key facts and suggestions for the
-SYCL flow.
+SYCL flow, and [`summary2.md`](summary2.md) covers the absorption timeline and how
+to shorten it.
 
 ## Published (on `main`)
 
