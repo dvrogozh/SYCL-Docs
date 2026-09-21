@@ -7,6 +7,13 @@ first added the document on its development branch (following renames);
 "Merged" is the date the document landed on `main`, and "Adding commit" is the
 commit on `main` that introduced it.
 
+[Development velocity](#development-velocity) measures the throughput of this
+pipeline; [Absorbing the `intel/llvm` extension
+backlog](#absorbing-the-intelllvm-extension-backlog) asks how long it would take
+that pipeline to standardise the 97 vendor extensions that DPC++ ships today.
+The Vulkan counterpart of this analysis is in
+[`vulkan_table.md`](vulkan_table.md).
+
 ## Published (on `main`)
 
 | Extension | Created | Merged into `main` | Adding commit | PR |
@@ -146,6 +153,240 @@ Submissions came in two waves — 2024 Q3 through 2025 Q2 (11 proposals), then a
 in 2025 Q2–Q4. The backlog was drained to 2 at the end of 2025 and has since
 climbed back to 5.
 
+## Absorbing the `intel/llvm` extension backlog
+
+The `sycl_khr_*` pipeline is fed largely by vendor extensions from
+[`intel/llvm`](https://github.com/intel/llvm). That repository keeps its
+extension specifications in `sycl/doc/extensions/`, split into `supported`
+(stable in DPC++), `experimental`, `proposed`, `deprecated` and `removed`
+directories. As of 2026-09-21 the two directories in question hold **97 extensions**
+(35 supported, 62 experimental, 44876 lines of specification).
+This section estimates how long it would take for all of them to become
+Khronos extensions at the rate observed so far.
+
+Five of them have been absorbed into KHR extensions already on `main`, all
+under different names, and a sixth was written afterwards against one of them.
+None of the renamings is recorded in either repository — the correspondences
+below were established by comparing APIs.
+
+### Already landed on `main`, under a different name
+
+| `intel/llvm` extension | Dir | Vendor doc created | Landed as | Merged | Vendor doc → KHR merge | Note |
+| --- | --- | --- | --- | --- | ---: | --- |
+| `sycl_ext_oneapi_default_context` | supported | 2021-09-10 | [`sycl_khr_default_context`](sycl_khr_default_context.adoc) | 2024-11-14 ([#624](https://github.com/KhronosGroup/SYCL-Docs/pull/624)) | 1161 |  |
+| `sycl_ext_oneapi_device_default_context` | supported | 2025-10-27 | [`sycl_khr_default_context`](sycl_khr_default_context.adoc) | 2024-11-14 ([#624](https://github.com/KhronosGroup/SYCL-Docs/pull/624)) | — | written after the KHR extension; the device-level query is still vendor-only |
+| `sycl_ext_oneapi_queue_empty` | supported | 2022-12-02 | [`sycl_khr_queue_empty_query`](sycl_khr_queue_empty_query.adoc) | 2025-05-15 ([#700](https://github.com/KhronosGroup/SYCL-Docs/pull/700)) | 895 | `ext_oneapi_empty()` → `queue::khr_empty()` |
+| `sycl_ext_oneapi_max_work_group_query` | experimental | 2021-10-18 | [`sycl_khr_max_work_group_queries`](sycl_khr_max_work_group_queries.adoc) | 2025-06-19 ([#712](https://github.com/KhronosGroup/SYCL-Docs/pull/712)) | 1340 |  |
+| `sycl_ext_oneapi_prod` | supported | 2022-09-20 | [`sycl_khr_queue_flush`](sycl_khr_queue_flush.adoc) | 2025-08-14 ([#809](https://github.com/KhronosGroup/SYCL-Docs/pull/809)) | 1059 | `ext_oneapi_prod()` → `queue::khr_flush()` |
+| `sycl_ext_oneapi_free_function_queries` | supported | 2022-02-03 | [`sycl_khr_work_item_queries`](sycl_khr_work_item_queries.adoc) | 2025-10-03 ([#682](https://github.com/KhronosGroup/SYCL-Docs/pull/682)) | 1338 | `this_work_item::*` → `khr::this_*` |
+
+Five of the nine published `sycl_khr_*` extensions come from this pool, and the
+two address-space cast extensions come from `proposed/sycl_ext_oneapi_address_cast`
+(`dynamic_address_cast`/`static_address_cast` → `khr::dynamic_addrspace_cast`/
+`khr::static_addrspace_cast`), which is outside the supported/experimental set
+counted here. Only `sycl_khr_group_interface` and `sycl_khr_split_headers` have no
+`intel/llvm` ancestor at all. Counting the in-flight proposals below, **11 of the
+15 `sycl_khr_*` proposals ever made (73%) restate an `intel/llvm` extension**.
+
+### Currently in flight
+
+| `intel/llvm` extension | Dir | Vendor doc created | Proposed as | PR | State |
+| --- | --- | --- | --- | --- | --- |
+| `sycl_ext_oneapi_enqueue_functions` | experimental | 2023-11-10 | `sycl_khr_launch` | [#922](https://github.com/KhronosGroup/SYCL-Docs/pull/922) | open |
+| `sycl_ext_oneapi_reusable_events` | experimental | 2025-12-09 | `sycl_khr_launch` | [#922](https://github.com/KhronosGroup/SYCL-Docs/pull/922) | open (event reuse half of the PR) |
+| `sycl_ext_oneapi_properties` | experimental | 2022-01-27 | `sycl_khr_properties` | [#980](https://github.com/KhronosGroup/SYCL-Docs/pull/980) | open (draft) |
+| `sycl_ext_oneapi_free_function_kernels` | experimental | 2024-01-25 | `sycl_khr_free_function_kernels` | [#1033](https://github.com/KhronosGroup/SYCL-Docs/pull/1033) | open |
+| `sycl_ext_oneapi_prefetch` | experimental | 2023-05-30 | `sycl_khr_prefetch_host` | [#960](https://github.com/KhronosGroup/SYCL-Docs/pull/960) | open; covers only device→host prefetch, not the cache-level hints |
+| `sycl_ext_oneapi_graph` | experimental | 2023-07-19 | `sycl_khr_command_graph` | [#825](https://github.com/KhronosGroup/SYCL-Docs/pull/825) | closed unmerged 2025-05-23 |
+
+`sycl_khr_prefetch_host` and `sycl_khr_convert` have no `intel/llvm` counterpart,
+so the KHR pipeline is not purely an absorption queue.
+
+### The rate of absorption
+
+| Metric | Value |
+| --- | --- |
+| Pool to absorb | **97** extensions (44876 lines) |
+| Absorbed so far | 6 (into 5 KHR extensions) |
+| In flight | 5 (into 4 KHR proposals, 1 of them a draft) |
+| Attempted and abandoned | 1 (`sycl_ext_oneapi_graph`) |
+| Never proposed | **85** (37318 lines) |
+| Absorption rate | 6 in 1.85 years since the first KHR merge = **3.24 per year** (0.27/month) |
+| Vendor doc → KHR merge latency | n=5, mean **1159 days** (3.2 years), median 1161, range 895–1340 |
+| Size ratio of the rewrite | 590 KHR lines from 662 vendor lines = **0.89×** |
+| Age of the 85 never-proposed | median **1173 days** (3.2 years), mean 1216, max 2503 |
+| Of those, already older than the mean absorption latency | **45 of 85** |
+
+The last two rows are the important ones: the median extension that has never
+been proposed to Khronos is already older than the average extension that made
+it through, so age alone does not predict absorption. 45 of the 85 have
+waited longer than the 3.2 years the successful ones took.
+
+### The pool grows faster than it is absorbed
+
+Reconstructing the contents of the two directories at each year end (the
+directory layout itself dates from the 2022-02-01 reorganisation, so the series
+starts there):
+
+| Date | `supported` + `experimental` |
+| --- | ---: |
+| 2022-12-21 | 49 |
+| 2023-12-21 | 69 |
+| 2024-12-11 | 89 |
+| 2025-12-17 | 88 |
+| 2026-09-21 | 97 |
+
+That is **+12.8 extensions per year** over the whole period and **+4.5 per year**
+over the last 1.8 years, against absorption of 3.2 per year. Even the more
+favourable recent growth figure exceeds absorption, and it sits only just below
+the total KHR merge throughput of 4.9 extensions per year — so even spending
+every single KHR merge on this backlog would barely outpace the arrival of new
+vendor extensions.
+
+### Estimates
+
+Two questions have to be separated, because they have very different answers.
+
+**If the pool were frozen today** — no new vendor extensions ever written — the
+remaining work divides by the observed rate:
+
+| Scenario | Extensions left | Rate | Time | Completed |
+| --- | ---: | --- | ---: | --- |
+| Observed absorption rate | 91 | 3.2/yr | **28 years** | 2054 |
+| All KHR merge capacity devoted to the backlog | 91 | 4.9/yr | **19 years** | 2045 |
+| Observed rate, portable extensions only | 68 | 3.2/yr | **21 years** | 2047 |
+| All KHR capacity, portable extensions only | 68 | 4.9/yr | **14 years** | 2040 |
+
+"All KHR merge capacity" means every future `sycl_khr_*` merge, at the measured
+0.41 merges/month, restates an `intel/llvm` extension and nothing else —
+`sycl_khr_split_headers`, `sycl_khr_group_interface`, `sycl_khr_convert` and
+`sycl_khr_prefetch_host` show that is not what happens. "Portable extensions
+only" excludes the 23 that are vendor- or backend-scoped by construction
+(16 `sycl_ext_intel_*`, 2 `sycl_ext_codeplay_*`, and 5 `sycl_ext_oneapi_*` bound to
+Level Zero, CUDA, ESIMD or a vendor device-architecture enumeration), on the
+assumption that these would never become Khronos extensions under any name.
+
+**Accounting for new arrivals**, the answer changes character. With the pool
+growing at +4.5/year and absorption at 3.2/year, the backlog never drains — it
+grows by 1.3 extensions per year. Absorption would have to reach
+4.5/year merely to hold the line, and **13.6/year — 2.8× the entire current
+KHR merge throughput — to clear the present backlog within ten years.** At full
+current KHR capacity (4.9/year) against +4.5/year of arrivals, the net drain is
+0.4/year and the 91 remaining extensions would take 229 years.
+
+So the defensible answer to "when can all supported and experimental extensions
+be added as Khronos extensions" is:
+
+* **~28 years (around 2054)** for the 91 that exist today, at the rate
+  actually observed over the last two years;
+* **~14 years (around 2040)** in the most optimistic case that is still
+  consistent with the data — vendor-specific extensions excluded and every KHR
+  merge slot spent on the backlog;
+* **never**, if `intel/llvm` keeps adding extensions at its recent rate and
+  Khronos keeps merging at 0.41/month.
+
+The dominant term is not the size of the backlog but the ratio of the two rates,
+and they are currently the wrong way round.
+
+A cross-check on volume agrees. The 85 never-proposed documents are
+37318 lines; at the 0.89× rewrite ratio measured above that is about
+33213 lines of KHR specification, and `main` has gained published
+extension text at 104 lines per month, which is 27 years of output.
+
+### Appendix: the 85 extensions never proposed to Khronos
+
+"Scope" marks extensions that are vendor- or backend-specific by construction.
+Age is from the first commit of the specification document in `intel/llvm`.
+
+| # | `intel/llvm` extension | Dir | Scope | Created | Age (y) | Lines |
+| ---: | --- | --- | --- | --- | ---: | ---: |
+| 1 | `sycl_ext_intel_kernel_args_restrict` | supported | vendor | 2019-11-14 | 6.9 | 134 |
+| 2 | `sycl_ext_oneapi_enqueue_barrier` | supported | portable | 2020-03-18 | 6.5 | 325 |
+| 3 | `sycl_ext_intel_esimd` | supported | vendor | 2020-07-20 | 6.2 | 1161 |
+| 4 | `sycl_ext_oneapi_use_pinned_host_memory_property` | supported | portable | 2020-07-22 | 6.2 | 39 |
+| 5 | `sycl_ext_oneapi_local_memory` | supported | portable | 2020-08-19 | 6.1 | 205 |
+| 6 | `sycl_ext_oneapi_accessor_properties` | supported | portable | 2020-09-08 | 6.0 | 513 |
+| 7 | `sycl_ext_oneapi_filter_selector` | supported | portable | 2020-09-18 | 6.0 | 86 |
+| 8 | `sycl_ext_oneapi_dot_accumulate` | supported | portable | 2020-11-04 | 5.9 | 112 |
+| 9 | `sycl_ext_oneapi_backend_level_zero` | supported | vendor | 2021-01-29 | 5.6 | 675 |
+| 10 | `sycl_ext_oneapi_group_sort` | experimental | portable | 2021-04-28 | 5.4 | 1223 |
+| 11 | `sycl_ext_oneapi_invoke_simd` | experimental | vendor | 2021-05-04 | 5.4 | 469 |
+| 12 | `sycl_ext_oneapi_uniform` | experimental | portable | 2021-05-04 | 5.4 | 201 |
+| 13 | `sycl_ext_oneapi_assert` | supported | portable | 2021-05-31 | 5.3 | 162 |
+| 14 | `sycl_ext_oneapi_srgb` | supported | portable | 2021-07-16 | 5.2 | 154 |
+| 15 | `sycl_ext_oneapi_sub_group_mask` | supported | portable | 2021-08-18 | 5.1 | 369 |
+| 16 | `sycl_ext_oneapi_device_global` | experimental | portable | 2021-09-29 | 5.0 | 1213 |
+| 17 | `sycl_ext_oneapi_kernel_properties` | experimental | portable | 2021-10-19 | 4.9 | 475 |
+| 18 | `sycl_ext_oneapi_discard_queue_events` | supported | portable | 2021-11-23 | 4.8 | 15 |
+| 19 | `sycl_ext_oneapi_sub_group` | supported | portable | 2022-02-02 | 4.6 | 5 |
+| 20 | `sycl_ext_oneapi_native_math` | experimental | portable | 2022-03-10 | 4.5 | 112 |
+| 21 | `sycl_ext_oneapi_usm_device_read_only` | supported | portable | 2022-03-22 | 4.5 | 98 |
+| 22 | `sycl_ext_oneapi_auto_local_range` | experimental | portable | 2022-04-04 | 4.5 | 204 |
+| 23 | `sycl_ext_oneapi_cuda_async_barrier` | experimental | vendor | 2022-05-17 | 4.3 | 390 |
+| 24 | `sycl_ext_oneapi_root_group` | experimental | portable | 2022-06-10 | 4.3 | 789 |
+| 25 | `sycl_ext_oneapi_device_architecture` | experimental | vendor | 2022-11-03 | 3.9 | 1275 |
+| 26 | `sycl_ext_oneapi_memcpy2d` | supported | portable | 2022-11-04 | 3.9 | 231 |
+| 27 | `sycl_ext_oneapi_bfloat16` | supported | portable | 2022-11-28 | 3.8 | 358 |
+| 28 | `sycl_ext_oneapi_bfloat16_math_functions` | experimental | portable | 2022-11-28 | 3.8 | 649 |
+| 29 | `sycl_ext_oneapi_queue_priority` | supported | portable | 2022-11-29 | 3.8 | 108 |
+| 30 | `sycl_ext_oneapi_weak_object` | supported | portable | 2022-12-05 | 3.8 | 334 |
+| 31 | `sycl_ext_intel_cslice` | supported | vendor | 2022-12-09 | 3.8 | 275 |
+| 32 | `sycl_ext_intel_queue_index` | supported | vendor | 2022-12-09 | 3.8 | 210 |
+| 33 | `sycl_ext_oneapi_user_defined_reductions` | experimental | portable | 2022-12-13 | 3.8 | 224 |
+| 34 | `sycl_ext_oneapi_annotated_ptr` | experimental | portable | 2022-12-15 | 3.8 | 817 |
+| 35 | `sycl_ext_oneapi_kernel_arg_properties` | experimental | portable | 2022-12-15 | 3.8 | 233 |
+| 36 | `sycl_ext_oneapi_non_uniform_groups` | experimental | portable | 2023-02-01 | 3.6 | 662 |
+| 37 | `sycl_ext_oneapi_peer_access` | supported | portable | 2023-03-03 | 3.6 | 165 |
+| 38 | `sycl_ext_oneapi_cuda_tex_cache_read` | experimental | vendor | 2023-03-08 | 3.5 | 119 |
+| 39 | `sycl_ext_intel_cache_config` | experimental | vendor | 2023-03-27 | 3.5 | 248 |
+| 40 | `sycl_ext_intel_legacy_image` | supported | vendor | 2023-05-05 | 3.4 | 112 |
+| 41 | `sycl_ext_codeplay_max_registers_per_work_group_query` | experimental | vendor | 2023-05-12 | 3.4 | 56 |
+| 42 | `sycl_ext_intel_grf_size` | experimental | vendor | 2023-06-14 | 3.3 | 254 |
+| 43 | `sycl_ext_oneapi_bindless_images` | experimental | portable | 2023-07-06 | 3.2 | 2853 |
+| 44 | `sycl_ext_intel_queue_immediate_command_list` | supported | vendor | 2023-07-13 | 3.2 | 157 |
+| 45 | `sycl_ext_oneapi_copy_optimize` | experimental | portable | 2023-07-19 | 3.2 | 159 |
+| 46 | `sycl_ext_oneapi_complex` | experimental | portable | 2023-07-27 | 3.2 | 580 |
+| 47 | `sycl_ext_oneapi_forward_progress` | experimental | portable | 2023-08-25 | 3.1 | 502 |
+| 48 | `sycl_ext_intel_matrix` | experimental | vendor | 2023-08-28 | 3.1 | 647 |
+| 49 | `sycl_ext_oneapi_matrix` | experimental | portable | 2023-08-28 | 3.1 | 1411 |
+| 50 | `sycl_ext_intel_cache_controls` | experimental | vendor | 2023-09-11 | 3.0 | 370 |
+| 51 | `sycl_ext_oneapi_kernel_compiler` | experimental | portable | 2023-11-10 | 2.9 | 1399 |
+| 52 | `sycl_ext_oneapi_kernel_compiler_opencl` | experimental | portable | 2023-11-10 | 2.9 | 484 |
+| 53 | `sycl_ext_intel_fp_control` | experimental | vendor | 2023-11-16 | 2.8 | 166 |
+| 54 | `sycl_ext_oneapi_raw_kernel_arg` | experimental | portable | 2023-12-08 | 2.8 | 162 |
+| 55 | `sycl_ext_oneapi_kernel_compiler_spirv` | experimental | portable | 2023-12-20 | 2.8 | 344 |
+| 56 | `sycl_ext_oneapi_composite_device` | experimental | portable | 2023-12-21 | 2.8 | 288 |
+| 57 | `sycl_ext_oneapi_in_order_queue_events` | experimental | portable | 2024-01-15 | 2.7 | 156 |
+| 58 | `sycl_ext_oneapi_profiling_tag` | experimental | portable | 2024-01-18 | 2.7 | 208 |
+| 59 | `sycl_ext_oneapi_private_alloca` | experimental | portable | 2024-02-28 | 2.6 | 299 |
+| 60 | `sycl_ext_intel_esimd_functions` | supported | vendor | 2024-03-22 | 2.5 | 998 |
+| 61 | `sycl_ext_oneapi_group_load_store` | experimental | portable | 2024-04-04 | 2.5 | 644 |
+| 62 | `sycl_ext_oneapi_work_group_memory` | experimental | portable | 2024-06-07 | 2.3 | 559 |
+| 63 | `sycl_ext_oneapi_virtual_mem` | experimental | portable | 2024-07-01 | 2.2 | 422 |
+| 64 | `sycl_ext_codeplay_enqueue_native_command` | experimental | vendor | 2024-07-22 | 2.2 | 447 |
+| 65 | `sycl_ext_oneapi_reduction_properties` | experimental | portable | 2024-09-03 | 2.0 | 254 |
+| 66 | `sycl_ext_oneapi_tangle` | experimental | portable | 2024-10-04 | 2.0 | 375 |
+| 67 | `sycl_ext_oneapi_get_kernel_info` | supported | portable | 2024-10-08 | 2.0 | 225 |
+| 68 | `sycl_ext_intel_event_mode` | experimental | vendor | 2024-10-31 | 1.9 | 166 |
+| 69 | `sycl_ext_oneapi_device_image_backend_content` | experimental | portable | 2024-12-03 | 1.8 | 250 |
+| 70 | `sycl_ext_oneapi_work_group_scratch_memory` | experimental | portable | 2024-12-04 | 1.8 | 189 |
+| 71 | `sycl_ext_oneapi_work_group_static` | experimental | portable | 2024-12-04 | 1.8 | 236 |
+| 72 | `sycl_ext_oneapi_num_compute_units` | supported | portable | 2024-12-11 | 1.8 | 174 |
+| 73 | `sycl_ext_oneapi_current_device` | experimental | portable | 2025-01-15 | 1.7 | 141 |
+| 74 | `sycl_ext_intel_kernel_queries` | supported | vendor | 2025-03-06 | 1.5 | 139 |
+| 75 | `sycl_ext_oneapi_memory_export` | experimental | portable | 2025-07-22 | 1.2 | 362 |
+| 76 | `sycl_ext_oneapi_clock` | experimental | portable | 2025-09-05 | 1.0 | 196 |
+| 77 | `sycl_ext_oneapi_platform_device_index` | supported | portable | 2025-09-12 | 1.0 | 197 |
+| 78 | `sycl_ext_oneapi_device_is_integrated_gpu` | experimental | portable | 2025-10-02 | 1.0 | 111 |
+| 79 | `sycl_ext_oneapi_usm_shortcuts` | experimental | portable | 2025-10-03 | 1.0 | 366 |
+| 80 | `sycl_ext_oneapi_device_wait` | experimental | portable | 2025-10-14 | 0.9 | 197 |
+| 81 | `sycl_ext_oneapi_fp8` | experimental | portable | 2025-11-13 | 0.9 | 1587 |
+| 82 | `sycl_ext_oneapi_inter_process_communication` | experimental | portable | 2025-11-20 | 0.8 | 1432 |
+| 83 | `sycl_ext_intel_device_info` | supported | vendor | 2026-02-23 | 0.6 | 1449 |
+| 84 | `sycl_ext_oneapi_register_host_memory` | experimental | portable | 2026-06-23 | 0.2 | 311 |
+| 85 | `sycl_ext_intel_maximum_registers` | experimental | vendor | 2026-08-03 | 0.1 | 247 |
+
+
 ## Methodology
 
 Pull request heads were made visible to `git` by adding a refspec to this clone
@@ -161,6 +402,34 @@ Candidate proposals were then found by listing `adoc/extensions/` at every
 hits). Pull request state, base branch and open/close dates were read from the
 GitHub PR pages; the REST API was unavailable (unauthenticated rate limit).
 Every candidate targets `KhronosGroup:main`.
+
+### The `intel/llvm` data
+
+The vendor-extension figures come from a clone of
+[`intel/llvm`](https://github.com/intel/llvm) at `5a5fe36012b7` (2026-09-21,
+branch `sycl`). The `supported`/`experimental` membership is the working-tree
+contents of `sycl/doc/extensions/`; two of those entries are directories
+(`supported/sycl_ext_intel_esimd` holds 2 extensions, `experimental/sycl_ext_matrix`
+holds 2), and `supported/C-CXX-StandardLibrary.rst` is not a `sycl_ext_*`
+extension and is excluded.
+
+Creation dates and the directory history of each document come from a single
+traversal recording every add, delete and rename under that path:
+
+```sh
+git log --reverse --diff-filter=ARD --name-status -M \
+    --format='C|%cd' --date=short sycl -- sycl/doc/extensions/
+```
+
+Rename chains are followed so that a document moved `proposed` → `experimental`
+→ `supported`, or renamed, keeps its original creation date. The same traversal,
+replayed forward, gives the pool size at any past date. Committer dates are used
+(137 of the last 3000 commits on `sycl` carry a backdated author date).
+
+The vendor → KHR correspondences are not recorded anywhere: only
+`sycl_ext_oneapi_device_default_context` names a `sycl_khr_*` extension, and no
+`sycl_khr_*` document names a vendor extension. They were established by
+comparing API names and semantics, and each is cited in the tables above.
 
 ### Caveats
 
@@ -178,6 +447,18 @@ Every candidate targets `KhronosGroup:main`.
   working group.
 * 2026 Q3 is incomplete, and activity after 2026-09-21 is not included. Open
   proposals' ages and the WIP figures grow simply with the passage of time.
+* The absorption estimates assume the measured rates continue. They are linear
+  extrapolations from 6 absorbed extensions over 22 months, so the confidence
+  interval is wide: one extra absorption per year moves the frozen-pool estimate
+  by roughly 7 years. They also say nothing about intent — an extension not yet
+  proposed to Khronos may be one nobody intends to propose, and the split into
+  "portable" and "vendor" in the tables above is a judgement about which of those
+  could plausibly be standardised, not a statement from either project.
+* Extensions may be absorbed in groups rather than one at a time. `sycl_khr_launch`
+  covers two vendor extensions in a single PR, and `sycl_khr_group_interface`
+  shows that Khronos may also replace a family of vendor extensions with a design
+  that matches none of them, in which case the absorption count understates
+  progress.
 
 ## Notes
 
