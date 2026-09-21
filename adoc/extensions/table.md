@@ -10,9 +10,10 @@ commit on `main` that introduced it.
 [Development velocity](#development-velocity) measures the throughput of this
 pipeline; [Absorbing the `intel/llvm` extension
 backlog](#absorbing-the-intelllvm-extension-backlog) asks how long it would take
-that pipeline to standardise the 97 vendor extensions that DPC++ ships today.
-The Vulkan counterpart of this analysis is in
-[`vulkan_table.md`](vulkan_table.md).
+that pipeline to standardise the 97 vendor extensions that DPC++ ships today;
+and [Composition](#composition-khronos-versus-vendor-extensions) compares the
+resulting Khronos/vendor mix with Vulkan's. The Vulkan counterpart of this
+analysis is in [`vulkan_table.md`](vulkan_table.md).
 
 ## Published (on `main`)
 
@@ -387,6 +388,78 @@ Age is from the first commit of the specification document in `intel/llvm`.
 | 85 | `sycl_ext_intel_maximum_registers` | experimental | vendor | 2026-08-03 | 0.1 | 247 |
 
 
+## Composition: Khronos versus vendor extensions
+
+The Vulkan registry splits 33% Khronos (`KHR`) / 31% multi-vendor (`EXT`) / 36%
+single-vendor. SYCL has no equivalent of the `EXT` tier — there is no
+cross-vendor-but-not-Khronos namespace with independent implementations behind it
+— so the comparison collapses to Khronos versus vendor. On that basis the Vulkan
+proportion is 33% / 67%.
+
+SYCL does not match it. Counting everything a DPC++ application can use today,
+the 9 published `sycl_khr_*` extensions against the 97 vendor extensions in
+`intel/llvm` give:
+
+| Population | n | Khronos | Vendor |
+| --- | ---: | ---: | ---: |
+| Vulkan, all ever published | 504 | 165 (**33%**) | 339 (67%) |
+| Vulkan, live today | 483 | 151 (**31%**) | 332 (69%) |
+| SYCL: `sycl_khr_*` + `intel/llvm` supported/experimental | 106 | 9 (**8.5%**) | 97 (91.5%) |
+| SYCL: including removed and deprecated documents, and all 15 KHR proposals | 152 | 15 (**9.9%**) | 137 (90.1%) |
+
+The Khronos share of the SYCL extension surface is **8.5%, roughly a quarter of
+Vulkan's 33%**. Within the vendor 91.5%, the breakdown is 79 `sycl_ext_oneapi_*`
+(74.5% of everything), 16 `sycl_ext_intel_*` (15.1%) and 2 `sycl_ext_codeplay_*`.
+`oneapi` is the closest thing SYCL has to Vulkan's `EXT` tier, but it is not the
+same thing: it is a single vendor's umbrella specification implemented by a single
+compiler, not a namespace requiring agreement between vendors, which is why
+collapsing it into "vendor" is the right call.
+
+Adoption is not the constraint. `intel/llvm` implements all 9 published
+extensions (`sycl/include/sycl/khr/` plus `queue::khr_empty`/`khr_flush`), so
+every `sycl_khr_*` extension that exists is shipped by the implementation that
+produced most of the vendor extensions. The 8.5% measures how much of that
+implementation's surface has been standardised, not how much of the standard has
+been implemented.
+
+### The stock differs; the flow does not
+
+The 33% figure is a ten-year accumulation, whereas SYCL's KHR effort is two years
+old and its vendor extensions are seven. Measuring instead what each ecosystem
+*added* over the same recent two years — 2024-09-21 to 2026-09-21:
+
+| Last 2 years | Khronos | Vendor | Khronos share of new extensions |
+| --- | ---: | ---: | ---: |
+| Vulkan | 30 | 69 | **30%** |
+| SYCL | 9 | 22 | **29%** |
+
+The two ecosystems are currently producing Khronos and vendor extensions in
+almost exactly the same proportion. SYCL's 8.5% stock is therefore not evidence
+of a different governance balance; it is the arithmetic of a two-year-old
+standardisation process sitting on top of a seven-year-old pile of vendor
+extensions. Vulkan had `KHR` extensions from day one — its Khronos share was 33%
+after one year and peaked at 47% after two — so it never had a backlog to work
+off.
+
+### When the proportions would converge
+
+At the measured flows (4.5 KHR/year, 11.0 new vendor extensions/year) the
+Khronos share of the SYCL surface rises from 8.5% towards an asymptote of **29%**:
+
+| Khronos share | Reached in | Around |
+| --- | ---: | --- |
+| 15% | 3.2 years | 2029 |
+| 20% | 8.7 years | 2035 |
+| 25% | 28 years | 2054 |
+| 33% (the Vulkan figure) | never at these rates | — |
+
+So the answer is: the proposition does not hold today and will not hold on any
+near horizon, but not because SYCL standardises a smaller fraction of new work —
+it standardises about the same fraction. Reaching Vulkan's 33% requires KHR
+output to overtake vendor output, not merely to keep pace with it, because the
+starting stock is 91% vendor. The 29% asymptote is above the 20% mark and below
+the Vulkan figure, and every year of delay raises the bar.
+
 ## Methodology
 
 Pull request heads were made visible to `git` by adding a refspec to this clone
@@ -459,6 +532,21 @@ comparing API names and semantics, and each is cited in the tables above.
   shows that Khronos may also replace a family of vendor extensions with a design
   that matches none of them, in which case the absorption count understates
   progress.
+* The composition comparison counts documents, not features or lines. A single
+  `KHR` extension can subsume several vendor extensions, and the two populations
+  are not drawn from equivalent registries: Vulkan's is one curated list in
+  `vk.xml`, while SYCL's "vendor" side is one implementation's `doc/extensions`
+  tree, which excludes vendor extensions shipped by AdaptiveCpp or any other SYCL
+  implementation. Counting those would lower the Khronos share further. The
+  Vulkan maturity-matched figures are computed from the same committer-date
+  dataset as the rest of `vulkan_table.md`, taking the Khronos share of all
+  extensions published within *n* years of 2016-02-16.
+* The two-year flow comparison uses the window 2024-09-21 → 2026-09-21 for both
+  projects, counting first publication for Vulkan and, for SYCL, `sycl_khr_*`
+  merges against first commits of new `intel/llvm` supported/experimental
+  documents. The convergence projection extrapolates both of those rates
+  unchanged and ignores absorption removing documents from the vendor side,
+  which would raise the Khronos share faster than shown.
 
 ## Notes
 

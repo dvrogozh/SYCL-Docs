@@ -244,15 +244,32 @@ every 2.2 published extensions.
 | Nearest latency analogue | 312 days `KHR`→core promotion | — |
 | Median document size | 52 lines | 103 lines |
 | Extension tiers | vendor → `EXT` → `KHR` → core | `KHR` only |
+| Khronos share of all extensions | 165 of 504 (**33%**) | 9 of 106 (**8.5%**) |
+| Khronos share of the last 2 years' new extensions | 30 of 99 (**30%**) | 9 of 31 (**29%**) |
+
+The SYCL rows count the 97 vendor extensions shipped by `intel/llvm` alongside
+the 9 published `sycl_khr_*` extensions, treating `oneapi`, `intel` and
+`codeplay` all as vendor; see [Composition: Khronos versus vendor
+extensions](table.md#composition-khronos-versus-vendor-extensions) for that
+derivation.
 
 Vulkan publishes about 10 extensions for every one SYCL publishes, but the
 comparison flatters neither process: Vulkan achieves that rate by doing the
 contested work in private and publishing only finished extensions, so its public
 history contains no rejected or stalled specifications to count. SYCL does the
 opposite — every draft, revision and abandonment is in the open repository.
-The one directly comparable figure is the tiering: SYCL has a single `KHR` tier,
-whereas 67% of Vulkan extensions start below `KHR` and only 10% of those ever
-climb.
+
+Two figures are directly comparable. The first is the tiering: SYCL has a single
+`KHR` tier, whereas 67% of Vulkan extensions start below `KHR` and only 10% of
+those ever climb. The second is composition, and it separates cleanly into stock
+and flow. Vulkan's accumulated stock is 33% Khronos and has never been below 31%
+at any point in its history — it had `KHR` extensions from the first release, and
+its Khronos share was 33% after one year and 47% after two. SYCL's stock is 8.5%
+Khronos, because its `KHR` process is two years old and sits on seven years of
+accumulated vendor extensions. But over the last two years the two projects
+standardised almost the same fraction of their new extensions: 30% for Vulkan,
+29% for SYCL. The difference is entirely the backlog, not the balance of current
+effort.
 
 ## Methodology
 
