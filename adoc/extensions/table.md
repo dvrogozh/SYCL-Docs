@@ -13,7 +13,9 @@ backlog](#absorbing-the-intelllvm-extension-backlog) asks how long it would take
 that pipeline to standardise the 97 vendor extensions that DPC++ ships today;
 and [Composition](#composition-khronos-versus-vendor-extensions) compares the
 resulting Khronos/vendor mix with Vulkan's. The Vulkan counterpart of this
-analysis is in [`vulkan_table.md`](vulkan_table.md).
+analysis is in [`vulkan_table.md`](vulkan_table.md), and
+[`summary.md`](summary.md) condenses both into key facts and suggestions for the
+SYCL flow.
 
 ## Published (on `main`)
 
@@ -117,10 +119,14 @@ fast proposals merge and enter the latency statistic, while slow ones stay open
 and only inflate WIP. `sycl_khr_launch` has now been in flight for 704 days,
 1.5× the slowest merge on record.
 
-**Latency is set by review and ratification queueing, not by authoring effort or
-document size.** `sycl_khr_dynamic_addrspace_cast` took 356 days with 9 commits
-and 103 lines, while the 864-line `sycl_khr_group_interface` merged in 237 days.
-`sycl_khr_convert` has been open 170 days on a single commit.
+**Among the extensions that merge, latency is set by review turnaround rather
+than by authoring effort or document size.** `sycl_khr_dynamic_addrspace_cast`
+took 356 days with 9 commits and 103 lines, while the 864-line
+`sycl_khr_group_interface` merged in 237 days. `sycl_khr_convert` has been open
+170 days on a single commit. Size does predict *whether* a proposal merges at all
+— 7 of the 9 documents at or below 200 lines are published, against 2 of the 6
+above it — but that effect shows up as proposals staying open, not as long merge
+times, for the survivorship reason above.
 
 **Most of the specification work written so far is unpublished.** The in-flight
 and abandoned documents total 5360 lines against 2304 lines on `main` — the four
@@ -339,11 +345,19 @@ is 270–331 lines/month, or **8 to 10 years** of output, against 27 years today
 
 Two things this does *not* fix:
 
-* **Per-extension latency.** The five absorbed extensions took a mean of 1159
-  days (3.2 years) from vendor document to KHR merge, and the nine published
-  extensions took a mean of 232 days from first draft to merge. Higher throughput
-  shrinks the queueing part of that wait, not the drafting and review part, so
-  no individual extension arrives much faster than ~8 months.
+* **Per-extension latency, beyond a point.** The wait an individual extension
+  faces has two parts: the time its vendor document sits in `intel/llvm` before a
+  KHR pull request is opened, and the time that pull request then takes. For the
+  five absorbed extensions the total averaged 1159 days (3.2 years), and the KHR
+  pull requests that absorbed them took a mean of just 137 days — so **88% of the
+  wait (1022 days, 2.8 years) was the document waiting to be started, and 12% was
+  the standardisation work itself**. Higher throughput compresses the first part
+  and not the second: at 2.6–3.2× the current rate the queue shrinks in proportion
+  and the mean vendor-document-to-KHR-merge wait falls from 3.2 years to about
+  **1.2–1.5 years**, but no single extension arrives faster than a pull request
+  takes — 137 days on average for these five, 58 days at best, and 232 days across
+  all nine published extensions. The estimates above are therefore about clearing a
+  queue, not about any one extension appearing sooner.
 * **The 23 vendor-scoped extensions.** `sycl_ext_intel_esimd`,
   `sycl_ext_oneapi_backend_level_zero` and the rest are bound to one vendor or
   backend by construction. Even at Vulkan's rate they are not candidates, which
@@ -357,12 +371,19 @@ alternative to more concurrency is faster turnaround: sustaining 15.6/yr at
 today's average WIP of 4.8 would require median time-to-merge to fall from 237
 days to about **112 days**.
 
-Finally, matching Vulkan in absolute terms is a much larger relative ask. Vulkan's
-15.6/yr is 3.1% of its 504-extension surface per year; 15.6/yr for SYCL would be
-**15% of its 106-extension surface per year**. Judged relatively, SYCL matching
-Vulkan would mean roughly 3.3 KHR extensions per year — which is below what it
-already does. The absolute figure is the right target only because the backlog to
-absorb is an absolute count of documents, not a fraction.
+Finally, note what the 2.6–3.2× figure does and does not say. It is a ratio of
+counts, and the two projects have very differently sized extension surfaces:
+Vulkan's 15.6/yr is 15.6 / 504 = **3.1% of its published extension surface per
+year**, while SYCL's 4.9/yr is 4.9 / 106 = **4.6% per year** (106 = the 9
+published `KHR` extensions plus the 97 in the pool). Measured that way
+SYCL already standardises a larger fraction of its own surface than Vulkan does —
+Vulkan's 3.1% applied to SYCL's 106 extensions would be just 3.3 per year, less
+than SYCL's current 4.9, and SYCL's 4.6% applied to Vulkan's 504 would be 23 per
+year, more than Vulkan's 15.6. The absolute count is still the right target for
+this section, because the backlog is 91 specific documents and each one needs a
+`KHR` merge regardless of how large the surrounding surface is. But the 2.6–3.2×
+should be read as the size of the job relative to current capacity, not as a
+verdict that SYCL standardises more slowly than Vulkan for its size.
 
 The effect on composition is correspondingly large. With KHR output at 12.7–15.6
 per year against 11.0 new vendor extensions per year, the Khronos share of the
