@@ -287,12 +287,88 @@ be added as Khronos extensions" is:
   Khronos keeps merging at 0.41/month.
 
 The dominant term is not the size of the backlog but the ratio of the two rates,
-and they are currently the wrong way round.
+and they are currently the wrong way round. The next subsection asks what happens
+if that ratio is inverted by raising KHR throughput to Vulkan's.
 
 A cross-check on volume agrees. The 85 never-proposed documents are
 37318 lines; at the 0.89× rewrite ratio measured above that is about
 33213 lines of KHR specification, and `main` has gained published
 extension text at 104 lines per month, which is 27 years of output.
+
+### What matching Vulkan's `KHR` rate would change
+
+Vulkan publishes Khronos extensions at **15.6 per year** over its whole history
+and **12.7 per year** since 2018 (see
+[`vulkan_table.md`](vulkan_table.md#khronos-khr-publication-rate)). SYCL's
+measured rate is **4.9 per year**. Matching Vulkan therefore means a **2.6× to
+3.2× increase** in KHR throughput.
+
+Throughput has to be converted into absorptions. Of the 9 published
+`sycl_khr_*` extensions, 5 absorbed 6 extensions from the
+`supported`/`experimental` pool — a yield of **0.67 pool extensions per published
+KHR extension**. Holding that yield fixed:
+
+| KHR publication rate | Absorptions/yr | 91 left, frozen pool | 68 portable, frozen pool | 91 left, pool still growing +4.5/yr |
+| --- | ---: | ---: | ---: | ---: |
+| 4.9/yr (SYCL today) | 3.3 | 28 yr (2054) | 21 yr (2047) | **never** (net −1.3/yr) |
+| 12.7/yr (Vulkan since 2018) | 8.5 | **11 yr (2037)** | 8 yr (2034) | **23 yr (2049)** |
+| 15.6/yr (Vulkan all time) | 10.4 | **9 yr (2035)** | 7 yr (2033) | **15 yr (2041)** |
+
+The qualitative change is the sign of the balance. Today absorption (3.3/yr) is
+below the pool's net growth (+4.5/yr), so the backlog never drains and the
+estimate is not a number but "never". At either Vulkan rate absorption exceeds
+growth — by 4.0/yr or 5.9/yr — and the problem becomes finite: **the backlog
+clears in roughly 15 to 23 years including all future arrivals, or 9 to 11 years
+if `intel/llvm` stopped adding extensions today.** That is the single most
+important effect; the absolute durations matter less than crossing from a
+diverging to a converging regime.
+
+If every KHR extension restated a pool extension (yield 1.0 instead of 0.67 —
+not what happens, but the upper bound):
+
+| KHR publication rate | 91 left, frozen pool | 91 left, pool growing +4.5/yr |
+| --- | ---: | ---: |
+| 4.9/yr | 19 yr (2045) | 228 yr |
+| 12.7/yr | 7 yr (2033) | **11 yr (2037)** |
+| 15.6/yr | 6 yr (2032) | **8 yr (2034)** |
+
+The volume cross-check agrees. The 85 never-proposed documents are 37318 lines,
+about 33213 lines of KHR text at the measured 0.89× rewrite ratio. Published
+extension text currently accumulates at 104 lines/month; scaled by 2.6–3.2× that
+is 270–331 lines/month, or **8 to 10 years** of output, against 27 years today.
+
+Two things this does *not* fix:
+
+* **Per-extension latency.** The five absorbed extensions took a mean of 1159
+  days (3.2 years) from vendor document to KHR merge, and the nine published
+  extensions took a mean of 232 days from first draft to merge. Higher throughput
+  shrinks the queueing part of that wait, not the drafting and review part, so
+  no individual extension arrives much faster than ~8 months.
+* **The 23 vendor-scoped extensions.** `sycl_ext_intel_esimd`,
+  `sycl_ext_oneapi_backend_level_zero` and the rest are bound to one vendor or
+  backend by construction. Even at Vulkan's rate they are not candidates, which
+  is why the "68 portable" column is the more meaningful target.
+
+What it would take. At the measured mean latency of 232 days, Little's Law puts
+the required work in progress at **8 to 10 concurrent proposals** (15.6 × 0.635)
+versus the 4.8 average observed so far — though SYCL has already peaked at 10 open
+proposals, on 2025-05-05, so the pipeline has held that much work once. The
+alternative to more concurrency is faster turnaround: sustaining 15.6/yr at
+today's average WIP of 4.8 would require median time-to-merge to fall from 237
+days to about **112 days**.
+
+Finally, matching Vulkan in absolute terms is a much larger relative ask. Vulkan's
+15.6/yr is 3.1% of its 504-extension surface per year; 15.6/yr for SYCL would be
+**15% of its 106-extension surface per year**. Judged relatively, SYCL matching
+Vulkan would mean roughly 3.3 KHR extensions per year — which is below what it
+already does. The absolute figure is the right target only because the backlog to
+absorb is an absolute count of documents, not a fraction.
+
+The effect on composition is correspondingly large. With KHR output at 12.7–15.6
+per year against 11.0 new vendor extensions per year, the Khronos share of the
+SYCL extension surface converges to **54–59%** rather than the 29–31% implied by
+current rates, and passes Vulkan's 33% in **4 to 5 years** (around 2030–2031)
+instead of never — see [Composition](#composition-khronos-versus-vendor-extensions).
 
 ### Appendix: the 85 extensions never proposed to Khronos
 
@@ -458,7 +534,10 @@ near horizon, but not because SYCL standardises a smaller fraction of new work �
 it standardises about the same fraction. Reaching Vulkan's 33% requires KHR
 output to overtake vendor output, not merely to keep pace with it, because the
 starting stock is 91% vendor. The 29% asymptote is above the 20% mark and below
-the Vulkan figure, and every year of delay raises the bar.
+the Vulkan figure, and every year of delay raises the bar. At Vulkan's own KHR
+publication rate the asymptote instead becomes 54–59% and the 33% mark is passed
+around 2030 — see [What matching Vulkan's `KHR` rate would
+change](#what-matching-vulkans-khr-rate-would-change).
 
 ## Methodology
 
@@ -541,6 +620,15 @@ comparing API names and semantics, and each is cited in the tables above.
   Vulkan maturity-matched figures are computed from the same committer-date
   dataset as the rest of `vulkan_table.md`, taking the Khronos share of all
   extensions published within *n* years of 2016-02-16.
+* The Vulkan-rate scenarios substitute a different KHR publication rate into the
+  same linear model and change nothing else. In particular they hold the
+  absorption yield at the measured 0.67 pool extensions per published KHR
+  extension and the pool's net growth at +4.5/yr; a project standardising three
+  times as fast might well also attract more vendor extensions, or fewer. The
+  baseline there is 4.9 KHR/yr (9 merges over the 22.2 months since the first
+  merge), whereas the composition section uses 4.5/yr (9 merges over the last two
+  years); the two conventions differ by 8% and are not interchangeable across
+  tables.
 * The two-year flow comparison uses the window 2024-09-21 → 2026-09-21 for both
   projects, counting first publication for Vulkan and, for SYCL, `sycl_khr_*`
   merges against first commits of new `intel/llvm` supported/experimental
