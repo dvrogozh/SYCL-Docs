@@ -12,6 +12,9 @@ means here and why it differs from the SYCL numbers.
   (2016-02-16), of which **483 are live** today and 21 were withdrawn.
 * Publication runs at **47.6 extensions per year** (3.96 per month) across the
   whole period, and has been remarkably stable at ~45/year since 2018.
+* **Khronos (`KHR`) extensions are published at 15.6 per year** over the whole
+  period and 12.7 per year since 2018 — about one a month, in bursts of 2.2 every
+  40 days — while 5.9 per year are folded into core.
 * The registry holds 715 extension slots; **229 (32%) are reserved but were
   never published** — the closest Vulkan analogue to an unfinished proposal.
 * Vendor extensions are the largest group by count, Khronos extensions dominate
@@ -70,6 +73,33 @@ Reading the two tables together:
   — three years. None is ratified, and they carry most of the deprecations.
 * Document size and revision churn barely differ between classes (median 48–60
   lines, ~24% ever revised), so the class differences are governance, not effort.
+
+### Khronos (`KHR`) publication rate
+
+| Window | Length | `KHR`+`KHX` published | Rate | Share of all extensions published |
+| --- | ---: | ---: | ---: | ---: |
+| All time (2016-02-16 →) | 10.60 y | 165 | **15.6/yr** (1.30/month) | 32.7% |
+| 2018-01-01 → (excluding the launch and `KHX` surge) | 8.72 y | 111 | **12.7/yr** (1.06/month) | 28.5% |
+| Last 5 years | 5.00 y | 64 | **12.8/yr** (1.07/month) | 27.8% |
+| Last 2 years | 2.00 y | 30 | **15.0/yr** (1.25/month) | 30.3% |
+| Last 1 year | 1.00 y | 13 | **13.0/yr** (1.08/month) | 24.1% |
+
+The steady-state figure is **12–15 `KHR` extensions per year, about one per
+month**, and it has barely moved in eight years: 12.7/yr since 2018, 12.8/yr over
+the last five years, 15.0/yr over the last two. The all-time 15.6/yr is inflated
+by the first two years — 11 at the 1.0 launch, then 31 `KHR` plus 12 `KHX` during
+2017. Of the 165, 153 are `KHR` and 12 are the retired `KHX` experimental set.
+
+Publication is bursty rather than continuous. The 165 extensions appeared on only
+**76 distinct dates, 2.2 at a time**, with a median of 40 days between
+`KHR`-publishing releases (mean 51, longest gap 328 days, from 2016-02-24 to
+2017-01-17). The largest batches were 18 on 2017-07-11, 14 on 2017-02-26 (the
+`KHX` set), 10 at the 1.0 launch, and 9 on 2024-01-25 ahead of Vulkan 1.4.
+
+Against that inflow, the outflow into core runs at **5.9 per year** — 63
+promotions in 10.6 years, distributed 23 into Vulkan 1.1, 18 into 1.2, 9 into
+1.3 and 13 into 1.4. Roughly two `KHR` extensions are published for every one
+that is folded into a core version.
 
 ### By vendor tag
 
@@ -237,7 +267,8 @@ every 2.2 published extensions.
 | --- | --- | --- |
 | Window | 10.6 years (2016-02-16 →) | 2.0 years (2024-09-17 →) |
 | Published extensions | 504 | 9 |
-| Publication rate | 3.96/month | 0.41/month |
+| Publication rate, all extensions | 3.96/month (47.6/yr) | 0.41/month (4.9/yr) |
+| Publication rate, Khronos (`KHR`) only | 1.30/month (15.6/yr); 1.06/month since 2018 | 0.41/month (4.9/yr) |
 | Proposals visible in public PRs | 14 (0 accepted) | 15 (9 accepted) |
 | Unfinished work visible as | 229 reserved registry slots | 5 open pull requests |
 | Observable proposal→acceptance latency | not observable (private development) | mean 232 days |
@@ -246,6 +277,7 @@ every 2.2 published extensions.
 | Extension tiers | vendor → `EXT` → `KHR` → core | `KHR` only |
 | Khronos share of all extensions | 165 of 504 (**33%**) | 9 of 106 (**8.5%**) |
 | Khronos share of the last 2 years' new extensions | 30 of 99 (**30%**) | 9 of 31 (**29%**) |
+| Khronos extensions published in the last 2 years | 30 (15.0/yr) | 9 (4.5/yr) |
 
 The SYCL rows count the 97 vendor extensions shipped by `intel/llvm` alongside
 the 9 published `sycl_khr_*` extensions, treating `oneapi`, `intel` and
@@ -253,8 +285,10 @@ the 9 published `sycl_khr_*` extensions, treating `oneapi`, `intel` and
 extensions](table.md#composition-khronos-versus-vendor-extensions) for that
 derivation.
 
-Vulkan publishes about 10 extensions for every one SYCL publishes, but the
-comparison flatters neither process: Vulkan achieves that rate by doing the
+Vulkan publishes about 10 extensions for every one SYCL publishes; restricted to
+Khronos extensions, where the governance work is comparable, the gap narrows to
+**3.2×** (15.6/yr against 4.9/yr, or 2.6× using Vulkan's post-2018 12.7/yr). But
+the comparison flatters neither process: Vulkan achieves that rate by doing the
 contested work in private and publishing only finished extensions, so its public
 history contains no rejected or stalled specifications to count. SYCL does the
 opposite — every draft, revision and abandonment is in the open repository.
