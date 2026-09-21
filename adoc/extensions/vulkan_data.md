@@ -3,10 +3,8 @@
 Generated from the `git` history of `/home/dvrogozh/git/Vulkan-Docs` (`main` at
 `7d39c89`, 2026-09-18) and from the extension registry `xml/vk.xml`, as of
 2026-09-21. This is the Vulkan counterpart of the SYCL analysis in
-[`table.md`](table.md); see [Methodology](#methodology) for what "created"
-means here and why it differs from the SYCL numbers. [`summary.md`](summary.md)
-condenses both documents into key facts and suggestions for the SYCL flow, and
-[`summary2.md`](summary2.md) covers the SYCL absorption timeline.
+[`sycl_data.md`](sycl_data.md); see [Methodology](#methodology) for what
+"created" means here and why it differs from the SYCL numbers.
 
 ## Summary
 
@@ -284,7 +282,7 @@ every 2.2 published extensions.
 The SYCL rows count the 97 vendor extensions shipped by `intel/llvm` alongside
 the 9 published `sycl_khr_*` extensions, treating `oneapi`, `intel` and
 `codeplay` all as vendor; see [Composition: Khronos versus vendor
-extensions](table.md#composition-khronos-versus-vendor-extensions) for that
+extensions](sycl_data.md#composition-khronos-versus-vendor-extensions) for that
 derivation.
 
 Vulkan publishes about 10 extensions for every one SYCL publishes; restricted to

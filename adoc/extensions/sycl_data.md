@@ -13,10 +13,7 @@ backlog](#absorbing-the-intelllvm-extension-backlog) asks how long it would take
 that pipeline to standardise the 97 vendor extensions that DPC++ ships today;
 and [Composition](#composition-khronos-versus-vendor-extensions) compares the
 resulting Khronos/vendor mix with Vulkan's. The Vulkan counterpart of this
-analysis is in [`vulkan_table.md`](vulkan_table.md), and
-[`summary.md`](summary.md) condenses both into key facts and suggestions for the
-SYCL flow, and [`summary2.md`](summary2.md) covers the absorption timeline and how
-to shorten it.
+analysis is in [`vulkan_data.md`](vulkan_data.md).
 
 ## Published (on `main`)
 
@@ -306,7 +303,7 @@ extension text at 104 lines per month, which is 27 years of output.
 
 Vulkan publishes Khronos extensions at **15.6 per year** over its whole history
 and **12.7 per year** since 2018 (see
-[`vulkan_table.md`](vulkan_table.md#khronos-khr-publication-rate)). SYCL's
+[`vulkan_data.md`](vulkan_data.md#khronos-khr-publication-rate)). SYCL's
 measured rate is **4.9 per year**. Matching Vulkan therefore means a **2.6× to
 3.2× increase** in KHR throughput.
 
@@ -640,7 +637,7 @@ comparing API names and semantics, and each is cited in the tables above.
   tree, which excludes vendor extensions shipped by AdaptiveCpp or any other SYCL
   implementation. Counting those would lower the Khronos share further. The
   Vulkan maturity-matched figures are computed from the same committer-date
-  dataset as the rest of `vulkan_table.md`, taking the Khronos share of all
+  dataset as the rest of `vulkan_data.md`, taking the Khronos share of all
   extensions published within *n* years of 2016-02-16.
 * The Vulkan-rate scenarios substitute a different KHR publication rate into the
   same linear model and change nothing else. In particular they hold the
